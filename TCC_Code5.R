@@ -264,7 +264,7 @@ nn1 <- neuralnet(ModoNovo ~ DISTANCIA_1 + DISTANCIA_2 + DISTANCIA_3 + DISTANCIA_
                 hidden = c(1),
                 linear.output = TRUE)
             
-plot(nn1)
+plot(nn1,rep = "best")
 
 # Modelo resumido com Distancia e Duração com 1 camada escondida e 2 neuronio
 
@@ -274,7 +274,7 @@ nn2 <- neuralnet(ModoNovo ~ DISTANCIA_1 + DISTANCIA_2 + DISTANCIA_3 + DISTANCIA_
                  hidden = c(2),
                  linear.output = TRUE)
 
-plot(nn2)
+plot(nn2,rep = "best")
 
 # Calcula predições da RNA (nn)
 
