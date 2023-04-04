@@ -1,5 +1,5 @@
 ################################################################################
-##                TCC MBA DATA SCIENCE & ANALYTICS USP EsaLQ                  ##
+##                TCC MBA DATA SCIENCE & ANALYTICS USP ESALQ                  ##
 ##                        sCRIPTS DE APOIO R                                  ##
 ##                        By: Marcelo Pitombo                                 ##
 ################################################################################
@@ -26,7 +26,8 @@ pacotes <- c('titanic',
              'gtsummary',
              'neuralnet',
              'gamlss',
-             'gamlss.add')      
+             'gamlss.add',
+             'randomForest')      
 
 if(sum(as.numeric(!pacotes %in% installed.packages())) != 0){
   instalador <- pacotes[!pacotes %in% installed.packages()]
@@ -52,6 +53,7 @@ library ('gamlss')
 library ('gamlss.add')
 library ('gtsummary')
 library('fastDummies')
+library('randomForest')
 
 ################################################################################
 ##    CARREGAMENTO DA BASE DE DADOS - PEQUISA OD METRO 2017                   ##
@@ -79,7 +81,7 @@ ODbase <-  OD2017[, c(1,42,49,50,52,53,83,103,118,119,127)]
 # 119 MODOPRIN
 # 127 DISTANCIA
 
-#Reclassifica a variável explicativa MODOPRIN
+#Reclassifica a variável dependente (MODOPRIN)
 
 ODbase <- ODbase %>%
   mutate(ModoNovo = if_else(MODOPRIN %in% 01:08, "Coletivo motorizado",if_else(MODOPRIN %in% 09:14, "Individual motorizado","Não motorizado")))
@@ -247,6 +249,13 @@ pred_rf_teste <- predict(arvore_rf_treino, Valid)
 
 confusionMatrix(table(pred_rf_teste, Valid$ModoNovo))
 
+# Analisando as variáveis importantes do modelo
+
+varImp(arvore_rf_treino)
+
+plot(varImp(arvore_rf_treino))
+
+varImpPlot(arvore_rf_treino)
 
 ################################################################################
 ##                               REDES NEURAIS                                ##
@@ -294,7 +303,7 @@ confusionMatrix(table(newp2, Valid_RNA$ModoNovo))
 ##                       TABELAS DESCRITIVAS - QUI SQUARE                    ##
 ################################################################################
 
-# make dataset with a few variables to summarize
+# Seleciona variáveis para sumarização
 ODbase3 <- ODbase2 %>% dplyr::select(IDADE,SEXO,RENDA_FA,CD_ATIVI,GRAU_INS,MOTIVO_O,DISTANCIA,DURACAO,ZonaNovo,ModoNovo)
 
 ODbase3 <- na.omit(ODbase3)
@@ -302,12 +311,12 @@ ODbase3 <- na.omit(ODbase3)
 ODbase3 <- 
   tbl_summary(
     ODbase3,
-    by = ModoNovo, # split table by group
-    missing = "no" # don't list missing data separately
+    by = ModoNovo, # divide a tabela por grupos
+    missing = "no" # não exibe os casos ausentes separadamente
   ) %>%
-  add_n() %>% # add column with total number of non-missing observations
-  add_p() %>% # test for a difference between groups
-  modify_header(label = "**Variável**") %>% # update the column header
+  add_n() %>% # adiciona coluna com total de ausentes
+  add_p() %>% # adiciona p-value para diferença entre grupos *qui-quadrado"
+  modify_header(label = "**Variável**") %>% # Altera o cabeçalho da tabela
   bold_labels() 
 
 
