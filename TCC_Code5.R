@@ -1,6 +1,6 @@
 ################################################################################
 ##                TCC MBA DATA SCIENCE & ANALYTICS USP ESALQ                  ##
-##                        sCRIPTS DE APOIO R                                  ##
+##                        SCRIPTS DE APOIO R                                  ##
 ##                        By: Marcelo Pitombo                                 ##
 ################################################################################
 
@@ -213,7 +213,7 @@ printcp(arvore_train)
 plotcp(arvore_train)
 
 rpart.plot::rpart.plot(prune(arvore_train,cp=0.068))
-arvore_train_pod <- prune(arvore_train,cp=0.0068)
+arvore_train_pod <- prune(arvore_train,cp=0.068)
 arvore_train_pod
 
 #Predizendo a base de teste com a arvore de treinamento podada e avalaindo acurácia do Modelo na base de teste
@@ -275,6 +275,8 @@ nn1 <- neuralnet(ModoNovo ~ DISTANCIA_1 + DISTANCIA_2 + DISTANCIA_3 + DISTANCIA_
             
 plot(nn1,rep = "best")
 
+nn1$result.matrix
+
 # Modelo resumido com Distancia e Duração com 1 camada escondida e 2 neuronio
 
 
@@ -284,6 +286,8 @@ nn2 <- neuralnet(ModoNovo ~ DISTANCIA_1 + DISTANCIA_2 + DISTANCIA_3 + DISTANCIA_
                  linear.output = TRUE)
 
 plot(nn2,rep = "best")
+
+nn2$result.matrix
 
 # Calcula predições da RNA (nn)
 
