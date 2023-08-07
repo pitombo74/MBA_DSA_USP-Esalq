@@ -80,7 +80,7 @@ OD2017 <- read_excel("C:/Users/Marcelo/OneDrive/MBA_DataScience/TCC/Pesq OD Metr
 #Importa Base de Zonas
 ZONAS <- read_excel("C:/Users/Marcelo/OneDrive/MBA_DataScience/TCC/Pesq OD Metro 2017/OD-2017/Banco de Dados-OD2017/ZONAS.xlsx")
 
-#Seleciona vari?veis de interesse para novo dataframe
+#Seleciona variáveis de interesse para novo dataframe
 
 ODbase <-  OD2017[, c(1,42,49,50,52,53,83,103,118,119,127)]
 
@@ -96,7 +96,7 @@ ODbase <-  OD2017[, c(1,42,49,50,52,53,83,103,118,119,127)]
 # 119 MODOPRIN
 # 127 DISTANCIA
 
-#Reclassifica a vari?vel dependente (MODOPRIN)
+#Reclassifica a variável dependente (MODOPRIN)
 
 ODbase <- ODbase %>%
   mutate(ModoNovo = if_else(MODOPRIN %in% 01:08, "Coletivo motorizado",if_else(MODOPRIN %in% 09:14, "Individual motorizado","Não motorizado")))
@@ -105,22 +105,22 @@ ODbase <- ODbase %>%
 # 02  Individual motorizado
 # 03  Não motorizado
 
-#Reclassifica a vari?vel ZonaNovo segundo o arquivo ZONA.xls
+#Reclassifica a variável ZonaNovo segundo o arquivo ZONA.xls
 
 ODbase <- merge(ODbase, ZONAS, by="ZONA")
 
-#    1	GRANDE S?O PAULO
-#    2	S?O PAULO - CENTRAL
-#    3	S?O PAULO - LESTE
-#    4	S?O PAULO - NORDESTE
-#    5	S?O PAULO - NOROESTE
-#    6	S?O PAULO - NORTE
-#    7	S?O PAULO - OESTE
-#    8	S?O PAULO - SUDESTE
-#    9	S?O PAULO - SUDOESTE
-#   10	S?O PAULO - SUL
+#    1	GRANDE SÃO PAULO
+#    2	SÃO PAULO - CENTRAL
+#    3	SÃO PAULO - LESTE
+#    4	SÃO PAULO - NORDESTE
+#    5	SÃO PAULO - NOROESTE
+#    6	SÃO PAULO - NORTE
+#    7	SÃO PAULO - OESTE
+#    8	SÃO PAULO - SUDESTE
+#    9	SÃO PAULO - SUDOESTE
+#   10	SÃO PAULO - SUL
 
-#Transforma vari?veis para tipo categ?rico/fatorial
+#Transforma variáveis para tipo categórico/fatorial
 
 ODbase$ModoNovo <- as.factor(ODbase$ModoNovo)
 ODbase$ZONA_O <- as.factor(ODbase$ZONA_O)
@@ -137,7 +137,7 @@ prop.table(table(ODbase$ModoNovo))
 
 #Categoriazando IDADE, RENDA_FA, DISTANCIA e DURACAO em uma nova base ODBase2
 
-#Transfere o conte?do da base original para a nova base ODbase2
+#Transfere o conteúdo da base original para a nova base ODbase2
 ODbase2 <- ODbase
 #Remove casos ausentes (NA)
 ODbase2 <- na.omit(ODbase2)
@@ -178,7 +178,7 @@ ODbase2 <- ODbase2 %>%
 #3	20 - 40 Min
 #4	> 40 Min
 
-#Converte vari?veis rec?m categorizadas para FACTOR
+#Converte variáveis recém categorizadas para FACTOR
 ODbase2$IDADE <- as.factor(ODbase2$IDADE)
 ODbase2$RENDA_FA <- as.factor(ODbase2$RENDA_FA)
 ODbase2$DISTANCIA <- as.factor(ODbase2$DISTANCIA)
@@ -188,7 +188,7 @@ ODbase2$DURACAO <- as.factor(ODbase2$DURACAO)
 ##  SEGMENTA A BASE DE DADOS EM TREINO E VALIDACAO MANTENDO PROPORCIONALIADE  ##          
 ################################################################################                        
 
-prop.table(table(ODbase2$ModoNovo)) #propor??o base de trabalho (modificada/categorizada)
+prop.table(table(ODbase2$ModoNovo)) #proporção base de trabalho (modificada/categorizada)
 
 set.seed(200)
 trainIndex <- createDataPartition(ODbase2$ModoNovo, p = 0.8,
@@ -198,8 +198,8 @@ trainIndex <- createDataPartition(ODbase2$ModoNovo, p = 0.8,
 Train <- ODbase2[ trainIndex,]
 Valid <- ODbase2[-trainIndex,]
 
-prop.table(table(Train$ModoNovo)) #propor??o treinamento
-prop.table(table(Valid$ModoNovo)) #propor??o teste
+prop.table(table(Train$ModoNovo)) #proporção treinamento
+prop.table(table(Valid$ModoNovo)) #proporção teste
 
 
 ################################################################################
@@ -216,13 +216,13 @@ arvore_train <- rpart(ModoNovo ~ IDADE + SEXO + RENDA_FA + CD_ATIVI + GRAU_INS +
 
 rpart.plot::rpart.plot(arvore_train)
 
-#Predizendo a base de teste com a arvore de treinamento e avalaindo acur?cia do Modelo na base de teste
+#Predizendo a base de teste com a arvore de treinamento e avalaindo acuracia do Modelo na base de teste
 
 pred_arvore_teste <- predict(arvore_train, Valid, type = "class")
 
 confusionMatrix(table(pred_arvore_teste, Valid$ModoNovo))
 
-#Podando a ?rvore de treinamento
+#Podando a arvore de treinamento
 
 printcp(arvore_train)
 plotcp(arvore_train)
@@ -231,7 +231,7 @@ rpart.plot::rpart.plot(prune(arvore_train,cp=0.068))
 arvore_train_pod <- prune(arvore_train,cp=0.068)
 arvore_train_pod
 
-#Predizendo a base de teste com a arvore de treinamento podada e avalaindo acur?cia do Modelo na base de teste
+#Predizendo a base de teste com a arvore de treinamento podada e avalaindo acuracia do Modelo na base de teste
 
 pred_arvore_pod <- predict(arvore_train_pod, Valid, type = "class")
 
@@ -243,7 +243,7 @@ confusionMatrix(table(pred_arvore_pod, Valid$ModoNovo))
 
 # Treinar a Random Forest
 
-# Semente aleat?ria para buscar a reprodutibilidade
+# Semente aleatoria para buscar a reprodutibilidade
 set.seed(2360873)
 
 #RF modelo com Zona
@@ -264,7 +264,7 @@ pred_rf_teste <- predict(arvore_rf_treino, Valid)
 
 confusionMatrix(table(pred_rf_teste, Valid$ModoNovo))
 
-# Analisando as vari?veis importantes do modelo
+# Analisando as variaveis importantes do modelo
 
 varImp(arvore_rf_treino)
 
@@ -635,7 +635,7 @@ confusionMatrix(table(binary_predictions, binary_reais))
 ##                       TABELAS DESCRITIVAS - QUI SQUARE                    ##
 ################################################################################
 
-# Seleciona vari?veis para sumariza??o
+# Seleciona variaveis para sumarizacao
 ODbase3 <- ODbase2 %>% dplyr::select(IDADE,SEXO,RENDA_FA,CD_ATIVI,GRAU_INS,MOTIVO_O,DISTANCIA,DURACAO,ZonaNovo,ModoNovo)
 
 ODbase3 <- na.omit(ODbase3)
@@ -644,11 +644,11 @@ ODbase3 <-
   tbl_summary(
     ODbase3,
     by = ModoNovo, # divide a tabela por grupos
-    missing = "no" # n?o exibe os casos ausentes separadamente
+    missing = "no" # nao exibe os casos ausentes separadamente
   ) %>%
   add_n() %>% # adiciona coluna com total de ausentes
-  add_p() %>% # adiciona p-value para diferen?a entre grupos *qui-quadrado"
-  modify_header(label = "**Variável**") %>% # Altera o cabe?alho da tabela
+  add_p() %>% # adiciona p-value para diferença entre grupos *qui-quadrado"
+  modify_header(label = "**Variável**") %>% # Altera o cabeçalho da tabela
   bold_labels() 
 
 
