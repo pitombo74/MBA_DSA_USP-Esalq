@@ -648,7 +648,7 @@ ODbase3 <-
   ) %>%
   add_n() %>% # adiciona coluna com total de ausentes
   add_p() %>% # adiciona p-value para diferen?a entre grupos *qui-quadrado"
-  modify_header(label = "**Vari?vel**") %>% # Altera o cabe?alho da tabela
+  modify_header(label = "**Variável**") %>% # Altera o cabe?alho da tabela
   bold_labels() 
 
 
