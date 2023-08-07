@@ -5,7 +5,7 @@
 ################################################################################
 
 
-####################### INSTALA??O DE PACOTES ##################################
+####################### INSTALACAO DE PACOTES ##################################
 
 
 
@@ -185,7 +185,7 @@ ODbase2$DISTANCIA <- as.factor(ODbase2$DISTANCIA)
 ODbase2$DURACAO <- as.factor(ODbase2$DURACAO)
 
 ################################################################################
-##  SEGMENTA A BASE DE DADOS EM TREINO E VALIDA??O MANTENDO PROPORCIONALIADE  ##          
+##  SEGMENTA A BASE DE DADOS EM TREINO E VALIDACAO MANTENDO PROPORCIONALIADE  ##          
 ################################################################################                        
 
 prop.table(table(ODbase2$ModoNovo)) #propor??o base de trabalho (modificada/categorizada)
@@ -203,7 +203,7 @@ prop.table(table(Valid$ModoNovo)) #propor??o teste
 
 
 ################################################################################
-##                            ?RVORES DE DECIS?O                              ##
+##                            ARVORES DE DECISAO                              ##
 ################################################################################
 
 #Arvore Trainamento
@@ -273,10 +273,8 @@ plot(varImp(arvore_rf_treino))
 varImpPlot(arvore_rf_treino)
 
 ################################################################################
-##                               REDES NEURAIS                                ##
+##                       REDES NEURAIS (KERAS/TENSORFLOW)                     ##
 ################################################################################
-
-###########  KERAS ##############
 
 Train_Keras <-  dummy_cols(Train, select_columns = c("ModoNovo","IDADE","SEXO","RENDA_FA", "CD_ATIVI","GRAU_INS","MOTIVO_O","DISTANCIA","DURACAO","ZonaNovo"))
 Valid_Keras <-  dummy_cols(Valid, select_columns = c("ModoNovo","IDADE","SEXO","RENDA_FA", "CD_ATIVI","GRAU_INS","MOTIVO_O","DISTANCIA","DURACAO","ZonaNovo"))
@@ -304,18 +302,17 @@ matriz_teste_entrada <- as.matrix (teste_entrada)
 teste_saida <- data.frame (Valid_Keras$ModoNovo_CM,Valid_Keras$ModoNovo_IM, Valid_Keras$ModoNovo_NM) 
 matriz_teste_saida <- as.matrix(teste_saida)
 
-## Modelo Keras h(4,1) --> modelo
+######################  Modelo 1 #####################################
 
-modelo <- keras_model_sequential()
+modelo1 <- keras_model_sequential()
 
-modelo %>%
-  layer_dense(units = 2, activation = "relu", input_shape = ncol(matriz_entrada)) %>%
-  layer_dense(units = 2, activation = "relu") %>%
-  # Camada de sa?da com ativa??o "Softmax" para problemas de classifica??o Multiclasse
+modelo1 %>%
+  layer_dense(units = 1, activation = "relu", input_shape = ncol(matriz_entrada)) %>%
+  # Camada de saida com ativacao "Softmax" para problemas de classificacao Multiclasse
   layer_dense(units = ncol(matriz_saida), activation = "softmax")
 
 # Compilar o modelo
-modelo %>% compile(
+modelo1 %>% compile(
   loss = "categorical_crossentropy",
   optimizer = "adam",
   #metrics = c("accuracy")
@@ -323,33 +320,29 @@ modelo %>% compile(
 )
 
 # Treino do modelo
-historico_treino <- modelo %>% fit(
+historico_treino <- modelo1 %>% fit(
   x = matriz_entrada,
   y = matriz_saida,
-  #epochs = 100,
   epochs = 20,
   batch_size = 32,
-  #validation_split = 0.2
   validation_data = list(matriz_teste_entrada, matriz_teste_saida)
-  
 )
 
-#### Matriz de Confus?o para o Keras (modelo)
+# Matriz de Confusao para o Keras (modelo1)
 
-predicoes <- modelo %>% predict(matriz_teste_entrada)
+predicoes <- modelo1 %>% predict(matriz_teste_entrada)
 colnames(predicoes) <- c("Coletivo motorizado","Individual motorizado", "N?o motorizado")
 binary_predictions <- colnames(predicoes)[max.col(predicoes,ties.method="first")]
 binary_reais <- colnames(predicoes)[max.col(matriz_teste_saida,ties.method="first")]
 confusionMatrix(table(binary_predictions, binary_reais))
 
-
-#### rede com h(2) --> modelo2
+###################### Modelo 2 #####################################
 
 modelo2 <- keras_model_sequential()
 
 modelo2 %>%
   layer_dense(units = 2, activation = "relu", input_shape = ncol(matriz_entrada)) %>%
-  # Camada de sa?da com ativa??o "Softmax" para problemas de classifica??o Multiclasse
+  # Camada de saida com ativacao "Softmax" para problemas de classificacao Multiclasse
   layer_dense(units = ncol(matriz_saida), activation = "softmax")
 
 # Compilar o modelo
@@ -369,7 +362,7 @@ historico_treino <- modelo2 %>% fit(
   validation_data = list(matriz_teste_entrada, matriz_teste_saida)
 )
 
-#### Matriz de Confus?o para o Keras (modelo2)
+# Matriz de Confusao para o Keras (modelo2)
 
 predicoes <- modelo2 %>% predict(matriz_teste_entrada)
 colnames(predicoes) <- c("Coletivo motorizado","Individual motorizado", "N?o motorizado")
@@ -377,16 +370,13 @@ binary_predictions <- colnames(predicoes)[max.col(predicoes,ties.method="first")
 binary_reais <- colnames(predicoes)[max.col(matriz_teste_saida,ties.method="first")]
 confusionMatrix(table(binary_predictions, binary_reais))
 
-
-#### rede com h(4,5,5) --> modelo3
+###################### Modelo 3 #####################################
 
 modelo3 <- keras_model_sequential()
 
 modelo3 %>%
-  layer_dense(units = 4, activation = "relu", input_shape = ncol(matriz_entrada)) %>%
-  layer_dense(units = 5, activation = "relu") %>%
-  layer_dense(units = 5, activation = "relu") %>%
-  # Camada de sa?da com ativa??o "Softmax" para problemas de classifica??o Multiclasse
+  layer_dense(units = 3, activation = "relu", input_shape = ncol(matriz_entrada)) %>%
+  # Camada de saida com ativacao "Softmax" para problemas de classificacao Multiclasse
   layer_dense(units = ncol(matriz_saida), activation = "softmax")
 
 # Compilar o modelo
@@ -404,14 +394,242 @@ historico_treino <- modelo3 %>% fit(
   epochs = 20,
   batch_size = 32,
   validation_data = list(matriz_teste_entrada, matriz_teste_saida)
-  
 )
+
+# Matriz de Confusao para o Keras (modelo3)
 
 predicoes <- modelo3 %>% predict(matriz_teste_entrada)
 colnames(predicoes) <- c("Coletivo motorizado","Individual motorizado", "N?o motorizado")
 binary_predictions <- colnames(predicoes)[max.col(predicoes,ties.method="first")]
 binary_reais <- colnames(predicoes)[max.col(matriz_teste_saida,ties.method="first")]
 confusionMatrix(table(binary_predictions, binary_reais))
+
+###################### Modelo 4 #####################################
+
+modelo4 <- keras_model_sequential()
+
+modelo4 %>%
+  layer_dense(units = 4, activation = "relu", input_shape = ncol(matriz_entrada)) %>%
+  # Camada de saida com ativacao "Softmax" para problemas de classificacao Multiclasse
+  layer_dense(units = ncol(matriz_saida), activation = "softmax")
+
+# Compilar o modelo
+modelo4 %>% compile(
+  loss = "categorical_crossentropy",
+  optimizer = "adam",
+  #metrics = c("accuracy")
+  metrics = c("accuracy", "categorical_accuracy")
+)
+
+# Treino do modelo
+historico_treino <- modelo4 %>% fit(
+  x = matriz_entrada,
+  y = matriz_saida,
+  epochs = 20,
+  batch_size = 32,
+  validation_data = list(matriz_teste_entrada, matriz_teste_saida)
+)
+
+# Matriz de Confusao para o Keras (modelo4)
+
+predicoes <- modelo4 %>% predict(matriz_teste_entrada)
+colnames(predicoes) <- c("Coletivo motorizado","Individual motorizado", "N?o motorizado")
+binary_predictions <- colnames(predicoes)[max.col(predicoes,ties.method="first")]
+binary_reais <- colnames(predicoes)[max.col(matriz_teste_saida,ties.method="first")]
+confusionMatrix(table(binary_predictions, binary_reais))
+
+###################### Modelo 5 #####################################
+
+modelo5 <- keras_model_sequential()
+
+modelo5 %>%
+  layer_dense(units = 4, activation = "relu", input_shape = ncol(matriz_entrada)) %>%
+  layer_dense(units = 2, activation = "relu") %>%
+  # Camada de saida com ativacao "Softmax" para problemas de classificacao Multiclasse
+  layer_dense(units = ncol(matriz_saida), activation = "softmax")
+
+# Compilar o modelo
+modelo5 %>% compile(
+  loss = "categorical_crossentropy",
+  optimizer = "adam",
+  #metrics = c("accuracy")
+  metrics = c("accuracy", "categorical_accuracy")
+)
+
+# Treino do modelo
+historico_treino <- modelo5 %>% fit(
+  x = matriz_entrada,
+  y = matriz_saida,
+  #epochs = 100,
+  epochs = 20,
+  batch_size = 32,
+  #validation_split = 0.2
+  validation_data = list(matriz_teste_entrada, matriz_teste_saida)
+  
+)
+
+#### Matriz de Confusao para o Keras (modelo 5)
+
+predicoes <- modelo5 %>% predict(matriz_teste_entrada)
+colnames(predicoes) <- c("Coletivo motorizado","Individual motorizado", "N?o motorizado")
+binary_predictions <- colnames(predicoes)[max.col(predicoes,ties.method="first")]
+binary_reais <- colnames(predicoes)[max.col(matriz_teste_saida,ties.method="first")]
+confusionMatrix(table(binary_predictions, binary_reais))
+
+###################### Modelo 6 #####################################
+
+modelo6 <- keras_model_sequential()
+
+modelo6 %>%
+  layer_dense(units = 4, activation = "relu", input_shape = ncol(matriz_entrada)) %>%
+  layer_dense(units = 3, activation = "relu") %>%
+  # Camada de saida com ativacao "Softmax" para problemas de classificacao Multiclasse
+  layer_dense(units = ncol(matriz_saida), activation = "softmax")
+
+# Compilar o modelo
+modelo6 %>% compile(
+  loss = "categorical_crossentropy",
+  optimizer = "adam",
+  #metrics = c("accuracy")
+  metrics = c("accuracy", "categorical_accuracy")
+)
+
+# Treino do modelo
+historico_treino <- modelo6 %>% fit(
+  x = matriz_entrada,
+  y = matriz_saida,
+  #epochs = 100,
+  epochs = 20,
+  batch_size = 32,
+  #validation_split = 0.2
+  validation_data = list(matriz_teste_entrada, matriz_teste_saida)
+  
+)
+
+#### Matriz de Confusao para o Keras (modelo 6)
+
+predicoes <- modelo6 %>% predict(matriz_teste_entrada)
+colnames(predicoes) <- c("Coletivo motorizado","Individual motorizado", "N?o motorizado")
+binary_predictions <- colnames(predicoes)[max.col(predicoes,ties.method="first")]
+binary_reais <- colnames(predicoes)[max.col(matriz_teste_saida,ties.method="first")]
+confusionMatrix(table(binary_predictions, binary_reais))
+
+
+###################### Modelo 7 #####################################
+
+modelo7 <- keras_model_sequential()
+
+modelo7 %>%
+  layer_dense(units = 4, activation = "relu", input_shape = ncol(matriz_entrada)) %>%
+  layer_dense(units = 4, activation = "relu") %>%
+  # Camada de saida com ativacao "Softmax" para problemas de classificacao Multiclasse
+  layer_dense(units = ncol(matriz_saida), activation = "softmax")
+
+# Compilar o modelo
+modelo7 %>% compile(
+  loss = "categorical_crossentropy",
+  optimizer = "adam",
+  #metrics = c("accuracy")
+  metrics = c("accuracy", "categorical_accuracy")
+)
+
+# Treino do modelo
+historico_treino <- modelo7 %>% fit(
+  x = matriz_entrada,
+  y = matriz_saida,
+  #epochs = 100,
+  epochs = 20,
+  batch_size = 32,
+  #validation_split = 0.2
+  validation_data = list(matriz_teste_entrada, matriz_teste_saida)
+  
+)
+
+#### Matriz de Confusao para o Keras (modelo 7)
+
+predicoes <- modelo7 %>% predict(matriz_teste_entrada)
+colnames(predicoes) <- c("Coletivo motorizado","Individual motorizado", "N?o motorizado")
+binary_predictions <- colnames(predicoes)[max.col(predicoes,ties.method="first")]
+binary_reais <- colnames(predicoes)[max.col(matriz_teste_saida,ties.method="first")]
+confusionMatrix(table(binary_predictions, binary_reais))
+
+
+###################### Modelo 8 #####################################
+
+modelo8 <- keras_model_sequential()
+
+modelo8 %>%
+  layer_dense(units = 4, activation = "relu", input_shape = ncol(matriz_entrada)) %>%
+  layer_dense(units = 5, activation = "relu") %>%
+  # Camada de saida com ativacao "Softmax" para problemas de classificacao Multiclasse
+  layer_dense(units = ncol(matriz_saida), activation = "softmax")
+
+# Compilar o modelo
+modelo8 %>% compile(
+  loss = "categorical_crossentropy",
+  optimizer = "adam",
+  #metrics = c("accuracy")
+  metrics = c("accuracy", "categorical_accuracy")
+)
+
+# Treino do modelo
+historico_treino <- modelo8 %>% fit(
+  x = matriz_entrada,
+  y = matriz_saida,
+  #epochs = 100,
+  epochs = 20,
+  batch_size = 32,
+  #validation_split = 0.2
+  validation_data = list(matriz_teste_entrada, matriz_teste_saida)
+  
+)
+
+#### Matriz de Confusao para o Keras (modelo 8)
+
+predicoes <- modelo8 %>% predict(matriz_teste_entrada)
+colnames(predicoes) <- c("Coletivo motorizado","Individual motorizado", "N?o motorizado")
+binary_predictions <- colnames(predicoes)[max.col(predicoes,ties.method="first")]
+binary_reais <- colnames(predicoes)[max.col(matriz_teste_saida,ties.method="first")]
+confusionMatrix(table(binary_predictions, binary_reais))
+
+###################### Modelo 9 #####################################
+
+modelo9 <- keras_model_sequential()
+
+modelo9 %>%
+  layer_dense(units = 4, activation = "relu", input_shape = ncol(matriz_entrada)) %>%
+  layer_dense(units = 5, activation = "relu") %>%
+  layer_dense(units = 5, activation = "relu") %>%
+  # Camada de saida com ativacao "Softmax" para problemas de classificacao Multiclasse
+  layer_dense(units = ncol(matriz_saida), activation = "softmax")
+
+# Compilar o modelo
+modelo9 %>% compile(
+  loss = "categorical_crossentropy",
+  optimizer = "adam",
+  #metrics = c("accuracy")
+  metrics = c("accuracy", "categorical_accuracy")
+)
+
+# Treino do modelo
+historico_treino <- modelo9 %>% fit(
+  x = matriz_entrada,
+  y = matriz_saida,
+  epochs = 20,
+  batch_size = 32,
+  validation_data = list(matriz_teste_entrada, matriz_teste_saida)
+  
+)
+
+
+# Matriz de Confusao para o Keras (modelo 9)
+
+predicoes <- modelo9 %>% predict(matriz_teste_entrada)
+colnames(predicoes) <- c("Coletivo motorizado","Individual motorizado", "N?o motorizado")
+binary_predictions <- colnames(predicoes)[max.col(predicoes,ties.method="first")]
+binary_reais <- colnames(predicoes)[max.col(matriz_teste_saida,ties.method="first")]
+confusionMatrix(table(binary_predictions, binary_reais))
+
 
 ################################################################################
 ##                       TABELAS DESCRITIVAS - QUI SQUARE                    ##
@@ -499,6 +717,3 @@ fviz_mca_ind(res.mca1, col.var = "contrib",
              addEllipses = TRUE, ellipse.type = "confidence",
              habillage = "ModoNovo", # color by groups
 )
-
-
-
