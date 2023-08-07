@@ -99,11 +99,11 @@ ODbase <-  OD2017[, c(1,42,49,50,52,53,83,103,118,119,127)]
 #Reclassifica a vari?vel dependente (MODOPRIN)
 
 ODbase <- ODbase %>%
-  mutate(ModoNovo = if_else(MODOPRIN %in% 01:08, "Coletivo motorizado",if_else(MODOPRIN %in% 09:14, "Individual motorizado","N?o motorizado")))
+  mutate(ModoNovo = if_else(MODOPRIN %in% 01:08, "Coletivo motorizado",if_else(MODOPRIN %in% 09:14, "Individual motorizado","Não motorizado")))
 
 # 01  Coletivo motorizado
 # 02  Individual motorizado
-# 03  N?o motorizado
+# 03  Não motorizado
 
 #Reclassifica a vari?vel ZonaNovo segundo o arquivo ZONA.xls
 
@@ -331,7 +331,7 @@ historico_treino <- modelo1 %>% fit(
 # Matriz de Confusao para o Keras (modelo1)
 
 predicoes <- modelo1 %>% predict(matriz_teste_entrada)
-colnames(predicoes) <- c("Coletivo motorizado","Individual motorizado", "N?o motorizado")
+colnames(predicoes) <- c("Coletivo motorizado","Individual motorizado", "Não motorizado")
 binary_predictions <- colnames(predicoes)[max.col(predicoes,ties.method="first")]
 binary_reais <- colnames(predicoes)[max.col(matriz_teste_saida,ties.method="first")]
 confusionMatrix(table(binary_predictions, binary_reais))
@@ -365,7 +365,7 @@ historico_treino <- modelo2 %>% fit(
 # Matriz de Confusao para o Keras (modelo2)
 
 predicoes <- modelo2 %>% predict(matriz_teste_entrada)
-colnames(predicoes) <- c("Coletivo motorizado","Individual motorizado", "N?o motorizado")
+colnames(predicoes) <- c("Coletivo motorizado","Individual motorizado", "Não motorizado")
 binary_predictions <- colnames(predicoes)[max.col(predicoes,ties.method="first")]
 binary_reais <- colnames(predicoes)[max.col(matriz_teste_saida,ties.method="first")]
 confusionMatrix(table(binary_predictions, binary_reais))
@@ -399,7 +399,7 @@ historico_treino <- modelo3 %>% fit(
 # Matriz de Confusao para o Keras (modelo3)
 
 predicoes <- modelo3 %>% predict(matriz_teste_entrada)
-colnames(predicoes) <- c("Coletivo motorizado","Individual motorizado", "N?o motorizado")
+colnames(predicoes) <- c("Coletivo motorizado","Individual motorizado", "Não motorizado")
 binary_predictions <- colnames(predicoes)[max.col(predicoes,ties.method="first")]
 binary_reais <- colnames(predicoes)[max.col(matriz_teste_saida,ties.method="first")]
 confusionMatrix(table(binary_predictions, binary_reais))
@@ -433,7 +433,7 @@ historico_treino <- modelo4 %>% fit(
 # Matriz de Confusao para o Keras (modelo4)
 
 predicoes <- modelo4 %>% predict(matriz_teste_entrada)
-colnames(predicoes) <- c("Coletivo motorizado","Individual motorizado", "N?o motorizado")
+colnames(predicoes) <- c("Coletivo motorizado","Individual motorizado", "Não motorizado")
 binary_predictions <- colnames(predicoes)[max.col(predicoes,ties.method="first")]
 binary_reais <- colnames(predicoes)[max.col(matriz_teste_saida,ties.method="first")]
 confusionMatrix(table(binary_predictions, binary_reais))
@@ -471,7 +471,7 @@ historico_treino <- modelo5 %>% fit(
 #### Matriz de Confusao para o Keras (modelo 5)
 
 predicoes <- modelo5 %>% predict(matriz_teste_entrada)
-colnames(predicoes) <- c("Coletivo motorizado","Individual motorizado", "N?o motorizado")
+colnames(predicoes) <- c("Coletivo motorizado","Individual motorizado", "Não motorizado")
 binary_predictions <- colnames(predicoes)[max.col(predicoes,ties.method="first")]
 binary_reais <- colnames(predicoes)[max.col(matriz_teste_saida,ties.method="first")]
 confusionMatrix(table(binary_predictions, binary_reais))
@@ -509,7 +509,7 @@ historico_treino <- modelo6 %>% fit(
 #### Matriz de Confusao para o Keras (modelo 6)
 
 predicoes <- modelo6 %>% predict(matriz_teste_entrada)
-colnames(predicoes) <- c("Coletivo motorizado","Individual motorizado", "N?o motorizado")
+colnames(predicoes) <- c("Coletivo motorizado","Individual motorizado", "Não motorizado")
 binary_predictions <- colnames(predicoes)[max.col(predicoes,ties.method="first")]
 binary_reais <- colnames(predicoes)[max.col(matriz_teste_saida,ties.method="first")]
 confusionMatrix(table(binary_predictions, binary_reais))
@@ -548,7 +548,7 @@ historico_treino <- modelo7 %>% fit(
 #### Matriz de Confusao para o Keras (modelo 7)
 
 predicoes <- modelo7 %>% predict(matriz_teste_entrada)
-colnames(predicoes) <- c("Coletivo motorizado","Individual motorizado", "N?o motorizado")
+colnames(predicoes) <- c("Coletivo motorizado","Individual motorizado", "Não motorizado")
 binary_predictions <- colnames(predicoes)[max.col(predicoes,ties.method="first")]
 binary_reais <- colnames(predicoes)[max.col(matriz_teste_saida,ties.method="first")]
 confusionMatrix(table(binary_predictions, binary_reais))
@@ -587,7 +587,7 @@ historico_treino <- modelo8 %>% fit(
 #### Matriz de Confusao para o Keras (modelo 8)
 
 predicoes <- modelo8 %>% predict(matriz_teste_entrada)
-colnames(predicoes) <- c("Coletivo motorizado","Individual motorizado", "N?o motorizado")
+colnames(predicoes) <- c("Coletivo motorizado","Individual motorizado", "Não motorizado")
 binary_predictions <- colnames(predicoes)[max.col(predicoes,ties.method="first")]
 binary_reais <- colnames(predicoes)[max.col(matriz_teste_saida,ties.method="first")]
 confusionMatrix(table(binary_predictions, binary_reais))
@@ -625,7 +625,7 @@ historico_treino <- modelo9 %>% fit(
 # Matriz de Confusao para o Keras (modelo 9)
 
 predicoes <- modelo9 %>% predict(matriz_teste_entrada)
-colnames(predicoes) <- c("Coletivo motorizado","Individual motorizado", "N?o motorizado")
+colnames(predicoes) <- c("Coletivo motorizado","Individual motorizado", "Não motorizado")
 binary_predictions <- colnames(predicoes)[max.col(predicoes,ties.method="first")]
 binary_reais <- colnames(predicoes)[max.col(matriz_teste_saida,ties.method="first")]
 confusionMatrix(table(binary_predictions, binary_reais))
